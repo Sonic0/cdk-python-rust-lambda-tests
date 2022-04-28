@@ -3,6 +3,8 @@ from aws_cdk import (
     Duration,
     RemovalPolicy,
     Environment,
+    CfnResource,
+    CfnOutput,
     aws_lambda as lambda_,
     aws_logs as logs
 )
@@ -24,11 +26,42 @@ class CdkPythonRustLambdaTestsStack(Stack):
             description='Deploying a Rust function on Lambda using the custom runtime',
             function_name='rust-test',
             log_retention=logs.RetentionDays.ONE_DAY,
+            tracing=lambda_.Tracing.ACTIVE,
             timeout=Duration.seconds(30)
         )
         # aws_lambda.grant_invoke()
         aws_lambda.apply_removal_policy(RemovalPolicy.DESTROY)
 
-        # Set Lambda Evironment variables
+        # Set Lambda Environment variables
         aws_lambda.add_environment("region", self.region)
-        # aws_lambda.add_environment("debug", str(self._resource_config.debug))
+
+        # Set up the Lambda Function URL
+        cfn_func_url = CfnResource(
+            scope=self,
+            id="lambdaFuncUrl",
+            type="AWS::Lambda::Url",
+            properties={
+                "TargetFunctionArn": aws_lambda.function_arn,
+                "AuthType": "NONE",
+                "Cors": {"AllowOrigins": ["*"]},
+            },
+        )
+
+        # Give everyone permission to invoke the Function URL
+        CfnResource(
+            scope=self,
+            id="funcURLPermission",
+            type="AWS::Lambda::Permission",
+            properties={
+                "FunctionName": aws_lambda.function_name,
+                "Principal": "*",
+                "Action": "lambda:InvokeFunctionUrl",
+                "FunctionUrlAuthType": "NONE",
+            }
+        )
+
+        CfnOutput(
+            self, "FunctionURL",
+            description="Lambda Function URL",
+            value=cfn_func_url.get_att(attribute_name="FunctionUrl").to_string()
+        )
