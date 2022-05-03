@@ -16,7 +16,7 @@ class CdkPythonRustLambdaTestsStack(Stack):
     def __init__(self, scope: Construct, construct_id: str, **kwargs) -> None:
         super().__init__(scope, construct_id, **kwargs)
 
-        aws_lambda_code = lambda_.Code.from_asset('cdk_lambda_rust/lambda.zip')
+        aws_lambda_code = lambda_.Code.from_asset('cdk_lambda_rust/artifacts/')
 
         aws_lambda = lambda_.Function(
             self, 'LambdaRustTest',
@@ -27,12 +27,9 @@ class CdkPythonRustLambdaTestsStack(Stack):
             function_name='rust-test',
             log_retention=logs.RetentionDays.ONE_DAY,
             tracing=lambda_.Tracing.ACTIVE,
-            timeout=Duration.seconds(30)
+            timeout=Duration.seconds(5)
         )
-        # aws_lambda.grant_invoke()
         aws_lambda.apply_removal_policy(RemovalPolicy.DESTROY)
-
-        # Set Lambda Environment variables
         aws_lambda.add_environment("region", self.region)
 
         # Set up the Lambda Function URL
