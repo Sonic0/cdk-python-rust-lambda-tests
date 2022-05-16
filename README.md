@@ -5,7 +5,7 @@ Install AWS CDK CLI
 ```bash
 npm install -g aws-cdk
 ```
-Install pip dependencies
+Install pip dependencies (I suggest the use of a virtual env)
 ```bash
 pip install -U -r requirements.txt
 ```
@@ -19,25 +19,10 @@ Deploy Lambda
 cdk deploy LambdaRustTestStack [--profile <local-aws-profile>]
 ```
 
-## Test Lambda 
-### AWS Console (Test event)
-#### Input
-```json
-{
-  "message": "vagabond",
-  "firstName": "Hachiko"
-}
-```
-#### Output
-```json
-{
-  "response": "Hello, vagabond! Your name is Hachiko"
-}
-```
-### AWS CLI
-```bash
-aws lambda invoke --function-name 'rust-test' --cli-binary-format raw-in-base64-out --payload '{"message": "CIAO", "firstName": "Andrea"}' out.json
-```
+## Test Lambda
+The request and response event formats follow the same schema as the Amazon 
+[API Gateway payload format version 2.0](https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-develop-integrations-lambda.html#http-api-develop-integrations-lambda.proxy-format).
+For more information about AWS Lambda Function-Url, see [AWS Lambda doc](https://docs.aws.amazon.com/lambda/latest/dg/lambda-urls.html).
 ### Locally (SAM)
 ```bash
 ./cdk-build.sh
@@ -48,11 +33,11 @@ sam local invoke LambdaRustTestXXXXXXX --event tests/lambda-function-url-input-e
 Get function url from deploy Output
 #### Input
 ```bash
-curl -X POST -H "Content-Type: application/json" -d '{"message": "dude", "firstName": "Andrea" }' <function-url>
+curl -X POST -H "Content-Type: application/json" -d '{"message": "I love you, Nana", "name": "Hachiko" }' <function-url>
 ```
 #### Output
 ```json
 {
-  "response": "Hello, dude! Your name is Andrea"
+  "response": "Hello, Hachiko! Your message is: I love you, Nana"
 }
 ```

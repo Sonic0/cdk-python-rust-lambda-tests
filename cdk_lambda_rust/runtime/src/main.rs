@@ -1,43 +1,58 @@
-use lambda_runtime::{service_fn, LambdaEvent, Error};
-use log::LevelFilter;
-use serde::{Deserialize, Serialize};
+use lambda_http::{service_fn, Error, IntoResponse, Request, RequestExt, Response};
+use log::{LevelFilter};
+use serde::Deserialize;
 use simple_logger::SimpleLogger;
 
 #[tokio::main]
 async fn main() -> Result<(), Error> {
-  SimpleLogger::new()
-      .with_level(LevelFilter::Info)
-      .init()
-      .unwrap();
+    SimpleLogger::new()
+        .with_level(LevelFilter::Info)
+        .init()
+        .unwrap();
 
-  let func = service_fn(handler);
-  lambda_runtime::run(func).await?;
-  Ok(())
+    let func = service_fn(handler);
+    lambda_http::run(func).await?;
+    Ok(())
 }
 
-#[derive(Deserialize)]
-#[serde(rename_all = "camelCase")]
-struct Event {
-  message: Option<String>,
-  first_name: Option<String>,
+#[derive(Deserialize, Debug)]
+// #[serde(rename_all = "camelCase")]
+struct EventBody {
+    message: String,
+    name: String,
 }
 
-#[derive(Serialize)]
-struct Output {
-  response: String,
-}
+async fn handler(event: Request) -> Result<impl IntoResponse, Error> {
+    // Query string
+    let query_strings = event.query_string_parameters();
+    let param1 = query_strings
+        .first("parameter1")
+        .unwrap_or("parameter not found");
+    let param2 = query_strings
+        .first("parameter2")
+        .unwrap_or("parameter not found");
+    log::info!("Query-string parameter1 value -> {}", param1);
+    log::info!("Query-string parameter2 value -> {}", param2);
 
-async fn handler(event: LambdaEvent<Event>) -> Result<Output, Error> {
-  let (event, _context) = event.into_parts();
-  let message = event.message.unwrap_or("world".to_string());
-  log::info!("{}", message);
-  let first_name = event.first_name.unwrap_or("Anonymous".to_string());
-  log::debug!("{}", first_name);
+    // Body
+    let body: EventBody = match event.payload() {
+        Ok(serialized_body) => serialized_body.unwrap_or(EventBody {
+            message: "No message".to_string(),
+            name: "Anon".to_string(),
+        }),
+        Err(err) => panic!("{}", err.to_string()),
+    };
+    log::info!("Input/default name -> {}", body.name);
+    log::info!("Input/default message -> {}", body.message);
 
-  let message_response = format!("Hello, {}! Your name is {}", message, first_name);
-  log::info!("{}", message_response);
+    let message_response = format!(
+        "Hello, {}! Your message for us is: {}",
+        body.name, body.message
+    );
+    log::info!("Response from the Lambda: {}", message_response);
 
-  Ok(Output {
-    response: message_response,
-  })
+    Ok(Response::builder()
+        .status(200)
+        .body(message_response)
+        .expect("failed to render response"))
 }

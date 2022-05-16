@@ -1,0 +1,58 @@
+{
+  "version": "2.0",
+  "routeKey": "$default",
+  "rawPath": "/hello",
+  "rawQueryString": "parameter1=value1&parameter2=value2",
+  "cookies": [
+    "cookie1",
+    "cookie2"
+  ],
+  "headers": {
+    "accept": "*/*",
+    "content-type": "application/json",
+    "host": "2f2wpnrtjz5pgilcliovqmzn6e0wlpfv.lambda-url.eu-central-1.on.aws",
+    "user-agent": "sam/1.50.0",
+    "x-amzn-trace-id": "Root=1-626d38d4-060ab74e23c69d27436fcb4e",
+    "x-forwarded-for": "3.33.333.334",
+    "x-forwarded-port": "443",
+    "x-forwarded-proto": "https"
+  },
+  "queryStringParameters": {
+    "parameter1": "value1,value2",
+    "parameter2": "value"
+  },
+  "requestContext": {
+    "accountId": "123456789012",
+    "apiId": "2f2wpnrtjz5pgilcliovqmzn6e0wlpfv",
+    "authentication": null,
+    "authorizer": {
+      "iam": {
+        "accessKey": "AKIA...",
+        "accountId": "111122223333",
+        "callerId": "AIDA...",
+        "cognitoIdentity": null,
+        "principalOrgId": null,
+        "userArn": "arn:aws:iam::111122223333:user/example-user",
+        "userId": "AIDA..."
+      }
+    },
+    "domainName": "2f2wpnrtjz5pgilcliovqmzn6e0wlpfv.lambda-url.us-west-2.on.aws",
+    "domainPrefix": "2f2wpnrtjz5pgilcliovqmzn6e0wlpfv",
+    "http": {
+      "method": "POST",
+      "path": "/hello",
+      "protocol": "HTTP/1.1",
+      "sourceIp": "123.123.123.123",
+      "userAgent": "sam/1.50.0"
+    },
+    "requestId": "936580b6-13e3-4d07-8e51-e8eef83e793a",
+    "routeKey": "$default",
+    "stage": "$default",
+    "time": "12/Mar/2020:19:03:58 +0000",
+    "timeEpoch": 1583348638390
+  },
+  "body": "{\"message\": \"Hello from Lambda client!\", \"name\": \"Andrea\"}",
+  "pathParameters": null,
+  "isBase64Encoded": false,
+  "stageVariables": null
+}
