@@ -29,7 +29,7 @@ For more information about AWS Lambda Function-Url, see [AWS Lambda doc](https:/
 cdk synth --no-staging > template.yml
 sam local invoke LambdaRustTestXXXXXXX --event tests/lambda-function-url-input-example.json
 ```
-### Function url via curl (TODO code handler)
+### Function url via curl
 Get function url from deploy Output
 #### Input
 ```bash
